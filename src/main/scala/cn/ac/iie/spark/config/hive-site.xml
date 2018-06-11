@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<configuration>
+
+    <!-- Site specific Hive configuration properties -->
+
+    <!-- Hive  -->
+    <property>
+        <name></name>
+        <value></value>
+    </property>
+
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>hdfs://master:9000/user/hive/warehouse</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://10.0.30.12:3306/hivemetastoredb?useUnicode=true&amp;characterEncoding=UTF-8</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>root</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>123321</value>
+    </property>
+    <property>
+        <name>hive.metastore.uris</name>
+        <value>thrift://10.0.30.101:9083</value>
+    </property>
+
+</configuration>

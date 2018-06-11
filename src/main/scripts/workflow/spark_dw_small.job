@@ -1,0 +1,4 @@
+#spark_dw_small.job
+type=command
+command=spark-submit --class cn.ac.iie.Main.cache.BatchDWAnalysis hours.jar ${prov} small
+dependencies=tb_sa_cache

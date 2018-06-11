@@ -1,0 +1,4 @@
+#ipanaly_big.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.IpAnalysis_ToES_Big hours.jar ${time}
+dependencies=uiptop_big

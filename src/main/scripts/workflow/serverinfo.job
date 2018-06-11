@@ -1,0 +1,4 @@
+#serverinfo.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.ServerInfo_ToES_Small hours.jar ${time}
+dependencies=spark_dw_small

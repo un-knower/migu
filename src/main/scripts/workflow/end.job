@@ -1,0 +1,4 @@
+#end.job
+type=command
+command=echo 'end job'
+dependencies=ipanaly_big,ipanaly,uipcity_big,uiphour,urianaly,uiptop

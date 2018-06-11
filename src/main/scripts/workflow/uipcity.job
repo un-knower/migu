@@ -1,0 +1,4 @@
+#uipcity.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.UIpCity_ToES_Small hours.jar ${time}
+dependencies=spark_dw_small

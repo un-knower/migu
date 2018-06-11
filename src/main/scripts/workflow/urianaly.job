@@ -1,0 +1,4 @@
+#urianaly.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.UriAnalysis_ToES_Url hours.jar ${time}
+dependencies=spark_dw_big_url

@@ -1,0 +1,41 @@
+package cn.ac.iie.base.dpi
+
+case class DpiParseLog(
+                        host:String,
+                        uri:String,
+                        _interface:String,
+                        visitDate:String,
+                        startTime:String,
+                        endTime:String,
+                        appTypeCode:String,
+                        protoType:String,
+                        usrIpv4:String,
+                        srvIpv4:String,
+                        srvPort:String,
+                        userType:String,
+                        operator:String,
+                        province:String,
+                        system:String,
+                        ulBytes:String,
+                        dlBytes:String,
+                        serverDelay:String,
+                        clientDelay:String,
+                        stACK21stREQ:String,
+                        stREQ21stACK:String,
+                        get2OKDelay:String,
+                        httpVersion:String,
+                        httpRespCode:String,
+                        userAgent:String,
+                        urlType:String,
+                        contentType:String,
+                        refer:String,
+                        cookie:String,
+                        contentLen:String,
+                        browserType:String,
+                        data_update:String,
+                        userProv:String,
+                        userOperator:String,
+                        userSystem:String
+                      ) {
+
+}

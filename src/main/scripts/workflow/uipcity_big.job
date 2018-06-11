@@ -1,0 +1,4 @@
+#uipcity_big.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.UIpCity_ToES_Big hours.jar ${time}
+dependencies=webans_big

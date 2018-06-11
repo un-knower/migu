@@ -1,0 +1,4 @@
+#spark_dw_big_url.job
+type=command
+command=spark-submit --class cn.ac.iie.Main.cache.BatchDWAnalysis hours.jar ${prov} big_url
+dependencies=tb_sa_cache

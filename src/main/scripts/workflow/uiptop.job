@@ -1,0 +1,4 @@
+#uiptop.job
+type=command
+command=spark-submit --class cn.ac.iie.spark.sql.appCache.UIpTop_ToES_Small hours.jar ${time}
+dependencies=webans

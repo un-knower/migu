@@ -1,0 +1,20 @@
+{
+  "data_limit":5,
+  "data_separator":"\\\\|",
+  "checkers":[
+    {
+      "class_name":"cn.ac.iie.check.RegexChecker",
+      "checker_param":{
+        "regex":"^(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])$"
+      },
+      "check_index":[0,3]
+    },
+    {
+      "class_name":"cn.ac.iie.spark.check.impl.RegexChecker",
+      "checker_param":{
+        "regex":"^[0-9a-zA-Z]+[0-9a-zA-Z\\.-]*\\.[a-zA-Z]{2,4}$"
+      },
+      "check_index":[1]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+presto.jar --server 10.0.30.101:8808 --catalog hive --schema ifp_source

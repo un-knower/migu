@@ -1,0 +1,38 @@
+启动flume
+nohup flume-ng agent -n producer -c /opt/apps/flume/conf -f /opt/apps/flume/conf/producer_ftp -Dflume.root.logger=DEBUG,console &
+
+
+flume-ng avro-client -c /opt/apps/flume/ -p 4141 -H 10.0.30.106 -F /home/hadoop-user/cache.log        //使用-F指定要推送的数据文件
+
+
+flume-ng avro-client -c /opt/apps/flume/ -p 4141 -H 10.0.30.106 -F  /home3/cache/small/20170605/CN_access_1479150101_SCS-CAC-01-ZTE162_20170605221501_1.log
+
+/home3/cache/small/20170605/CN_access_1479150101_SCS-CAC-86-ZTE133_20170605213502_1.log
+
+
+
+/home3/cache/small/20170605/CN_access_1479150101_SCS-CAC-86-ZTE227_20170605235501_1.log
+
+
+
+CN_access_1479150101_SCS-CAC-86-ZTE189_20170605042001_1.log
+
+
+<!-- Flume 《==》 Spark -->
+flume-ng avro-client -c /opt/apps/flume/ -p 4145 -H 10.0.30.106 -F /home3/cache/small/20170605/CN_access_1479150101_SCS-CAC-86-ZTE227_20170605235501_1.log
+
+
+
+nohup spark-submit --class cn.ac.iie.spark.streaming.scala.kafka.OverviewToESByFlume ./Hours-0.1.jar &
+
+
+nohup spark-submit --class cn.ac.iie.spark.streaming.scala.kafka.OverviewToESByFlume ./Hours_Flume.jar > flume.out &
+
+nohup spark-submit --class cn.ac.iie.spark.streaming.scala.kafka.OverviewToESByFlume ./Hours_Flume.jar > flume.out &
+
+flume-ng avro-client -c /opt/apps/flume/ -p 4131 -H 10.0.30.107 -F /home3/cache/small/20170605/CN_access_1479150101_SCS-CAC-86-ZTE227_20170605235501_1.log
+
+nohup spark-submit --class cn.ac.iie.spark.streaming.scala.kafka.Main.ReadDataOnHive ./Hours_Big_jar/Hours.jar > test.out &
+
+
+//wallpaper
