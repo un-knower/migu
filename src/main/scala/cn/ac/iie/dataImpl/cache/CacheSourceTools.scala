@@ -8,7 +8,8 @@ import java.util.{Calendar, Date, Properties}
 import cn.ac.iie.utils.cache.IpTools
 import cn.ac.iie.utils.cache.WebSiteInfo
 import cn.ac.iie.base.cache.{CacheOverview, MiguCacheOverview, TB_SA_Cache_Small, TB_SA_Cache_big}
-import cn.ac.iie.utils.dns.DomainUtil
+import cn.ac.iie.base.common.IpControl
+import cn.ac.iie.utils.dns.{DomainUtil, JdbcUtil}
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.sql.DataFrame
 //import org.elasticsearch.spark.sql.EsSparkSQL
@@ -514,22 +515,30 @@ object CacheSourceTools {
 
   def getOTTAnalysis(line:Array[String]
                 ,factory:String
-                ,ipRulesBroadcast: Broadcast[ArrayBuffer[(String, String, String, String, String, String, String)]]
-                ,ipwebinfoArray:Broadcast[mutable.HashMap[String, (String, String, String, String, String, String)]]
+                ,ipRulesBroadcast: Broadcast[Array[IpControl]]
                ): MiguCacheOverview ={
+    val ipControl = JdbcUtil.findIpControlByIp(line(1),ipRulesBroadcast.value)
     val requestStartDate = line(8)
-    val responseDuration = line(11).toDouble
+    var responseDuration = line(11).toDouble
+    if(responseDuration==0){
+      responseDuration = 1
+    }
     val userIP = line(1)
     val statusCode = ""//line(7)
     val flow = line(12).toDouble
-    val client_RequestURL = ""//line(6)
     val client_RequestType = ""//line(5)
     //val useragent = line(11)
     val servicetype=line(6)
-    val province=""
-    val user_terminal="电视盒子"//getUserAgent(useragent)
+    val province=ipControl.location
+    val user_terminal="TV"//getUserAgent(useragent)
     val busines_type=if(servicetype.contains("00")) "点播" else "直播"
-    val operator=""//getIPCalculation(userIP,ipRulesBroadcast)._5
+    val operator=ipControl.operator match {
+      case "0101" => "1"
+      case "0104" => "1"
+      case "0102" => "2"
+      case "0103" => "3"
+      case _ => "4"
+    }
     val req=getCodeSummary(statusCode)
     val req_oknum=1//if(req._1==1||req._2==1) 1 else 0
     val req_fail_num=0//if(req_oknum==1)0 else 1
@@ -555,42 +564,51 @@ object CacheSourceTools {
     * 计算 Yunfan CDN日志
     * @param line
     * @param ipRulesBroadcast
-    * @param ipwebinfoArray
     * @return
     */
-  def getYunfanCDN(line:Array[String],ipRulesBroadcast: Broadcast[ArrayBuffer[(String, String, String, String, String, String, String)]]
-                    ,ipwebinfoArray:Broadcast[mutable.HashMap[String, (String, String, String, String, String, String)]]
-                   ): MiguCacheOverview={
+  def getAppAnalysisCDN(line:Array[String],ipRulesBroadcast: Broadcast[Array[IpControl]]): MiguCacheOverview={
+    val ipControl = JdbcUtil.findIpControlByIp(line(4),ipRulesBroadcast.value)
     val requestStartDate = line(0)
-    val responseDuration = line(1).toLong
+    var responseDuration = line(1).toLong
+    if(responseDuration==0){
+      responseDuration = 1
+    }
     val userIP = line(4)
     val statusCode = line(7)
-    val flow = line(2).toDouble*8/1024
+    //BigDecimal b1 = new BigDecimal(Double.toString(v1));
+    //BigDecimal b2 = new BigDecimal(Double.toString(v2));
+    //return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    val flow = BigDecimal(line(2))/BigDecimal(8)/BigDecimal(1024)
     //云帆缺失get post内容信息的字段
     val client_RequestType = line(5)
     val client_RequestURL = line(3)
     val useragent = line(5)
     val cacheState = getCacheState(line(8))
-    val province=""
+    val province= ipControl.location
     val user_terminal="app"//getUserAgent(useragent)
     val busines_type=if(client_RequestURL.contains("hlsmgzblive.miguvideo.com")||client_RequestURL.contains("hlsmgsplive.miguvideo.com")) "直播" else if(client_RequestURL.contains("zbvod")||client_RequestURL.contains("spvod")) "点播" else "未知"
-    val operator="yunfan"//getIPCalculation(userIP,ipRulesBroadcast)._5
+    val operator= ipControl.operator match {
+      case "0101" => "1"
+      case "0104" => "1"
+      case "0102" => "2"
+      case "0103" => "3"
+      case _ => "4"
+    }
     val req=getCodeSummary(statusCode)
     val req_oknum=if(req._1==1||req._2==1) 1 else 0
     val req_fail_num=if(req_oknum==1)0 else 1
     val returnerror_num=if(req_oknum!=0) 0 else 1
     val reqStatus: (Int, Int, Int) = getReqStyle(client_RequestType)
-
-    val domain=new URL(client_RequestURL).getHost
-    val back_speed=((flow)/(responseDuration)*1000)
+    var domain =new URL(client_RequestURL).getHost
+    val back_speed=((flow)/(BigDecimal(responseDuration)/1000)).toDouble
     val back4xx_num=if(req._3==1) 1 else 0
     val back5xx_num=if(req._4==1) 1 else 0
     val updateTime = getUpdateTime("")
     val business_time=getBusiness_time(requestStartDate,responseDuration)
-    val hit_flow=if(cacheState._1==1) flow else 0
-    val miss_flow=if(cacheState._2==1) flow else 0
-    val other_flow=if(cacheState._1!=1&&cacheState._2!=1) flow else 0
-    MiguCacheOverview("",province,user_terminal,domain,busines_type,operator,1,req_oknum,req_fail_num,cacheState._1,cacheState._2,req._1,req._2,req._3,req._4,returnerror_num,reqStatus._1,reqStatus._2,reqStatus._3,"KB",flow,hit_flow,miss_flow,other_flow,back_speed,back4xx_num,back5xx_num,updateTime,"5m",business_time,getBusiness_time_1h(business_time),getBusiness_time_1d(business_time))
+    val hit_flow =if(cacheState._1==1) flow.toDouble else 0
+    val miss_flow =if(cacheState._2==1) flow.toDouble else 0
+    val other_flow=if(cacheState._1!=1&&cacheState._2!=1) flow.toDouble else 0
+    MiguCacheOverview("",province,user_terminal,domain,busines_type,operator,1,req_oknum,req_fail_num,cacheState._1,cacheState._2,req._1,req._2,req._3,req._4,returnerror_num,reqStatus._1,reqStatus._2,reqStatus._3,"KB",flow.toDouble,hit_flow,miss_flow,other_flow,back_speed,back4xx_num,back5xx_num,updateTime,"5m",business_time,getBusiness_time_1h(business_time),getBusiness_time_1d(business_time))
   }
 
 
@@ -968,8 +986,12 @@ object CacheSourceTools {
   }
 
   def main(args: Array[String]): Unit = {
-    println(getBusiness_time_oot("20180601001417"))
-    println(getBusiness_time("20180601001417",1000))
+    val str = "0"
+    var responseDuration = str.toLong
+    if(responseDuration==0){
+      responseDuration = 1
+    }
+    println(responseDuration)
   }
 
 }

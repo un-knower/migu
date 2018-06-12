@@ -25,7 +25,7 @@ object JdbcUtil {
     val ipControls = ArrayBuffer[IpControl]()
     try{
       conn = getConnection()
-      val sql = "select int_startip,int_endip,location,city,operator,system,user_type from ip_control order by int_startip,int_endip asc"
+      val sql = "select int_startip,int_endip,location,operator,system,user_type from ip_control order by int_startip,int_endip asc"
       val statement = conn.prepareStatement(sql)
       val resultSet = statement.executeQuery()
       while (resultSet.next()){
@@ -35,7 +35,7 @@ object JdbcUtil {
           resultSet.getString("location"),
           resultSet.getString("operator"),
           resultSet.getString("system"),
-          resultSet.getString("city"),
+          null,
           resultSet.getString("user_type")))
       }
     }catch {
